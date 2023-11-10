@@ -86,6 +86,7 @@ CREATE TABLE "Condition" (
 -- CreateTable
 CREATE TABLE "Record" (
     "id" SERIAL NOT NULL,
+    "code" VARCHAR(15),
     "name" VARCHAR(100) NOT NULL,
     "description" VARCHAR(500),
     "amountPlanned" DECIMAL(10,2),
@@ -103,8 +104,8 @@ CREATE TABLE "Record" (
     "userId" INTEGER,
     "statusId" INTEGER,
     "parentId" INTEGER,
-    "parentIds" INTEGER[],
-    "childrenIds" INTEGER[],
+    "parents" TEXT,
+    "childrenCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
 

@@ -38,7 +38,6 @@ categoryRouter.put("/:id", async (req: Request, res: Response) => {
 
 categoryRouter.delete("/", async (req: Request, res: Response) => {
 	const id = req.body.id || 0;
-  console.log(req.body);
 
   if (!id) {
     return res.status(400).json({message: "no id was provided"});
