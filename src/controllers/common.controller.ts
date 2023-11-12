@@ -6,6 +6,7 @@ const vendorCtrl = new PrismaClient().vendor;
 const statusCtrl = new PrismaClient().status;
 const conditionCtrl = new PrismaClient().condition;
 const userCtrl = new PrismaClient().user;
+const projectCtrl = new PrismaClient().project;
 
 export enum CommonModelName {
   category = 'category',
@@ -22,6 +23,8 @@ export enum CommonModelName {
   conditions = 'condition',
   user = 'user',
   users = 'user',
+  project = 'project',
+  projects = 'project',
 }
 const ctrlList = {
   category: categoryCtrl,
@@ -38,6 +41,8 @@ const ctrlList = {
   conditions: conditionCtrl,
   user: userCtrl,
   users: userCtrl,
+  project: projectCtrl,
+  projects: projectCtrl,
 };
 
 export default class CommonController {

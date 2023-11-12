@@ -7,7 +7,6 @@ export default class RecordController {
 		const list: object[] = await recordCtrl.findMany({
 			select: {
 				id: true,
-				shortName: true,
 				name: true,
 				amountActual: true,
 				startDateActual: true,
@@ -20,13 +19,11 @@ export default class RecordController {
 				user: {select: {id: true, name: true}},
 				status: {select: {id: true, name: true}},
 
-				partners: true, // ToDo: select
 				conditions: true, // ToDo: select
 
 				// parent: {
 				// 	select: {
 				// 		id: true,
-				// 		shortName: true,
 				// 		name: true,
 				// 		parentId: true,
 				// 		childrenCount: true,
@@ -35,7 +32,6 @@ export default class RecordController {
 				children: {
 					select: {
 						id: true,
-						shortName: true,
 						name: true,
 						childrenCount: true,
 					}
