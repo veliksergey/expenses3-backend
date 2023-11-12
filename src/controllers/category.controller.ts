@@ -1,5 +1,4 @@
 import {Category, PrismaClient, Prisma} from "@prisma/client";
-
 const categoryCtrl = new PrismaClient().category;
 
 export default class CategoryController {

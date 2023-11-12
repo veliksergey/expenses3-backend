@@ -18,71 +18,62 @@ datasource db {
 model Type {
   id          Int                 @id @default(autoincrement())
   name        String              @unique @db.VarChar(100)
+  description String?             @db.Text()
   tags        String[]
-  categories  CategoriesOnTypes[]
   records     Record[]
-  permissions Permission[]
+  categories  CategoriesOnTypes[]
 }
 
 // category
 model Category {
-  id      Int                 @id @default(autoincrement())
-  name    String              @unique @db.VarChar(100)
-  tags    String[]
-  records Record[]
-  types   CategoriesOnTypes[]
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique @db.VarChar(100)
+  description String?             @db.Text()
+  tags        String[]
+  records     Record[]
+  types       CategoriesOnTypes[]
 }
 
 // bank
 model Account {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique @db.VarChar(100)
-  tags    String[]
-  records Record[]
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text()
+  tags        String[]
+  records     Record[]
 }
 
 // vendor
 model Vendor {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique @db.VarChar(100)
-  tags    String[]
-  records Record[]
+  id          Int        @id @default(autoincrement())
+  name        String     @unique @db.VarChar(100)
+  description String?    @db.Text()
+  tags        String[]
+  records     Record[]
+  notes       Note[]
+  documents   Document[]
 }
 
 // status
 model Status {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique @db.VarChar(100)
-  tags    String[]
-  records Record[]
-}
-
-// user
-model User {
-  id          Int                  @id @default(autoincrement())
-  name        String               @unique @db.VarChar(100)
-  username    String?              @db.VarChar(100)
-  password    String?              @db.VarChar(200)
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text()
   tags        String[]
   records     Record[]
-  permissions PermissionsOnUsers[]
 }
 
-model Permission {
+// project
+model Project {
   id          Int                  @id @default(autoincrement())
-  name        String               @unique @db.VarChar(200)
-  description String               @db.VarChar(200)
-  type        Type?                @relation(fields: [typeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  typeId      Int?
-  users       PermissionsOnUsers[]
-}
-
-// partner
-model Partner {
-  id      Int                 @id @default(autoincrement())
-  name    String              @unique @db.VarChar(100)
-  tags    String[]
-  records RecordsOnPartners[]
+  shortName   String?              @unique @db.VarChar(15)
+  name        String               @unique @db.VarChar(100)
+  description String?              @db.Text()
+  tags        String[]
+  records     Record[]
+  partners    ProjectsOnPartners[]
+  notes       Note[]
+  documents   Document[]
 }
 
 // condition
@@ -97,9 +88,8 @@ model Condition {
 // record
 model Record {
   id                Int       @id @default(autoincrement())
-  code              String?   @db.VarChar(15)
   name              String    @db.VarChar(100)
-  description       String?   @db.VarChar(500)
+  description       String?   @db.Text()
   amountPlanned     Decimal?  @db.Decimal(10, 2)
   amountActual      Decimal?  @db.Decimal(10, 2)
   amountRelated     Decimal?  @db.Decimal(10, 2)
@@ -121,8 +111,11 @@ model Record {
   userId     Int?
   status     Status?   @relation(fields: [statusId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   statusId   Int?
+  project    Project?  @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  projectId  Int?
 
-  partners   RecordsOnPartners[]
+  notes      Note[]
+  documents  Document[]
   conditions RecordsOnConditions[]
 
   parent        Record?  @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -140,7 +133,31 @@ model Record {
   @@index([vendorId])
   @@index([userId])
   @@index([statusId])
+  @@index([projectId])
   @@index([parentId])
+}
+
+// partner
+model Partner {
+  id          Int                  @id @default(autoincrement())
+  name        String               @unique @db.VarChar(100)
+  description String?              @db.Text()
+  tags        String[]
+  records     ProjectsOnPartners[]
+  notes       Note[]
+  documents   Document[]
+}
+
+// user
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique @db.VarChar(100)
+  username  String?    @db.VarChar(100)
+  password  String?    @db.VarChar(200)
+  tags      String[]
+  records   Record[]
+  notes     Note[]
+  documents Document[]
 }
 
 // categories types rel
@@ -149,21 +166,23 @@ model CategoriesOnTypes {
   typeId     Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   categoryId Int
+  active     Boolean  @default(true)
+  order      Int?
 
   @@id([typeId, categoryId])
 }
 
-// records partners rel
-model RecordsOnPartners {
+// projects partners rel
+model ProjectsOnPartners {
   partner     Partner @relation(fields: [partnerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   partnerId   Int
-  record      Record  @relation(fields: [recordId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  recordId    Int
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  projectId   Int
   percentage  Decimal @db.Decimal(10, 2)
   name        String? @db.VarChar(100)
   description String?
 
-  @@id([partnerId, recordId])
+  @@id([partnerId, projectId])
 }
 
 // records conditions rel
@@ -172,29 +191,35 @@ model RecordsOnConditions {
   conditionId Int
   record      Record    @relation(fields: [recordId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   recordId    Int
+  value       Boolean   @default(false)
 
   @@id([conditionId, recordId])
 }
 
-// users permissions rel
-model PermissionsOnUsers {
-  user         User       @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  userId       Int
-  permisison   Permission @relation(fields: [permissionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  permissionId Int
-
-  @@id([userId, permissionId])
-}
-
 // notes
 model Note {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(100)
-  note      String    @db.Text
-  relType   String    @db.VarChar(100)
-  relId     Int       @db.Integer
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  description String    @db.Text
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  recordId  Int?
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  vendorId  Int?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  projectId Int?
+  partner   Partner? @relation(fields: [partnerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  partnerId Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  userId    Int?
+
+  @@index([recordId])
+  @@index([vendorId])
+  @@index([projectId])
+  @@index([partnerId])
+  @@index([userId])
 }
 
 // documents
@@ -203,7 +228,22 @@ model Document {
   name        String    @db.VarChar(100)
   description String?   @db.VarChar(500)
   path        String    @db.Text
-  relType     String    @db.VarChar(100)
-  relId       Int       @db.Integer
   createdAt   DateTime? @default(now())
+
+  record    Record?  @relation(fields: [recordId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  recordId  Int?
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  vendorId  Int?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  projectId Int?
+  partner   Partner? @relation(fields: [partnerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  partnerId Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  userId    Int?
+
+  @@index([recordId])
+  @@index([vendorId])
+  @@index([projectId])
+  @@index([partnerId])
+  @@index([userId])
 }

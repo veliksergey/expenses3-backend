@@ -18,4 +18,9 @@ router.get('/:id', async (req, res) => {
 	return res.status(200).json(record);
 });
 
+router.post('/', async (req, res) => {
+	const createdRecord = await recordCtrl.create(req.body);
+	return res.status(200).json(createdRecord);
+});
+
 export default router;
