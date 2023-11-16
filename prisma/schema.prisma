@@ -17,9 +17,11 @@ datasource db {
 // type
 model Type {
   id          Int                 @id @default(autoincrement())
+  enum        String              @unique @db.VarChar(100)
   name        String              @unique @db.VarChar(100)
   description String?             @db.Text()
   tags        String[]
+  active      Boolean             @default(true)
   records     Record[]
   categories  CategoriesOnTypes[]
   statuses    StatusesOnTypes[]
