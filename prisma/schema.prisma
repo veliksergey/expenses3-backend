@@ -22,6 +22,7 @@ model Type {
   tags        String[]
   records     Record[]
   categories  CategoriesOnTypes[]
+  statuses    StatusesOnTypes[]
 }
 
 // category
@@ -56,17 +57,17 @@ model Vendor {
 
 // status
 model Status {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(100)
-  description String?  @db.Text()
+  id          Int               @id @default(autoincrement())
+  name        String            @unique @db.VarChar(100)
+  description String?           @db.Text()
   tags        String[]
   records     Record[]
+  types       StatusesOnTypes[]
 }
 
 // project
 model Project {
   id          Int                  @id @default(autoincrement())
-  shortName   String?              @unique @db.VarChar(15)
   name        String               @unique @db.VarChar(100)
   description String?              @db.Text()
   tags        String[]
@@ -118,11 +119,14 @@ model Record {
   documents  Document[]
   conditions RecordsOnConditions[]
 
-  parent        Record?  @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  parentId      Int?
-  children      Record[] @relation("ParentChildren")
-  parents       String?  @db.Text()
-  childrenCount Int      @default(0)
+  parent   Record?  @relation("ParentChildren", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  parentId Int?
+  children Record[] @relation("ParentChildren")
+  parents  String?  @db.Text()
+
+  childrenCount  Int @default(0) @db.SmallInt
+  notesCount     Int @default(0) @db.SmallInt
+  documentsCount Int @default(0) @db.SmallInt
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -167,9 +171,21 @@ model CategoriesOnTypes {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   categoryId Int
   active     Boolean  @default(true)
-  order      Int?
+  order      Int?     @db.SmallInt
 
   @@id([typeId, categoryId])
+}
+
+// statuses types rel
+model StatusesOnTypes {
+  type     Type    @relation(fields: [typeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  typeId   Int
+  status   Status  @relation(fields: [statusId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  statusId Int
+  active   Boolean @default(true)
+  order    Int?    @db.SmallInt
+
+  @@id([typeId, statusId])
 }
 
 // projects partners rel
