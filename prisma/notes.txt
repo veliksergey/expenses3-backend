@@ -1,0 +1,10 @@
+--help
+
+Create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
+dotenv -e ./env/dev.env -- npx prisma migrate dev
+
+Reset your database and apply all migrations, all data will be lost
+dotenv -e ./env/dev.env -- npx prisma migrate reset
+
+DB seed
+dotenv -e ./env/dev.env -- npx prisma db seed

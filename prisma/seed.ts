@@ -14,7 +14,7 @@ const types: TypeModel[] = [
   {enum: 'in', name: 'Income', tags: ['in']},
   {enum: 'out', name: 'Expense', tags: ['out']},
   {enum: 'loanIn', name: 'Loan Borrowing', description: 'Loan from the bank/person', tags: ['loan in']},
-  {enum: 'loanOut', name: 'Loan Payment', description: 'Monthly payment, balloon payment, interest, other expenses related to this loan', tags: ['loan out']},
+  {enum: 'loanOut', name: 'Loan Payment', description: 'Monthly payment, balloon payment, interest, other expenses related to specific loan', tags: ['loan out']},
   {enum: 'investmentIn', name: 'Investment In', description: 'Someone invested in your project', tags: ['inv in']},
   {enum: 'investmentOut', name: 'Investment Out', description: 'You invested in someone\'s project', tags: ['inv out']},
   {enum: 'subscriptionIn', name: 'Subscription In', description: 'Someone is making regular payments to you', tags: ['sub in']},
